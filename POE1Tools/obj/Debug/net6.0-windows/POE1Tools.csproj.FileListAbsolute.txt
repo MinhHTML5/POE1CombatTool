@@ -1,0 +1,17 @@
+E:\Works\Programming\POE1Tools\POE1Tools\bin\Debug\net6.0-windows\POE1Tools.exe
+E:\Works\Programming\POE1Tools\POE1Tools\bin\Debug\net6.0-windows\POE1Tools.dll.config
+E:\Works\Programming\POE1Tools\POE1Tools\bin\Debug\net6.0-windows\POE1Tools.deps.json
+E:\Works\Programming\POE1Tools\POE1Tools\bin\Debug\net6.0-windows\POE1Tools.runtimeconfig.json
+E:\Works\Programming\POE1Tools\POE1Tools\bin\Debug\net6.0-windows\POE1Tools.dll
+E:\Works\Programming\POE1Tools\POE1Tools\bin\Debug\net6.0-windows\POE1Tools.pdb
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\POE1Tools.Main.resources
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\POE1Tools.csproj.GenerateResource.cache
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\POE1Tools.GeneratedMSBuildEditorConfig.editorconfig
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\POE1Tools.AssemblyInfoInputs.cache
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\POE1Tools.AssemblyInfo.cs
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\POE1Tools.csproj.CoreCompileInputs.cache
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\POE1Tools.dll
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\refint\POE1Tools.dll
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\POE1Tools.pdb
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\POE1Tools.genruntimeconfig.cache
+E:\Works\Programming\POE1Tools\POE1Tools\obj\Debug\net6.0-windows\ref\POE1Tools.dll
