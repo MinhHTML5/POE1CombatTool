@@ -61,6 +61,7 @@
             chkAutoHealHigh2 = new System.Windows.Forms.CheckBox();
             chkAutoHealLow2 = new System.Windows.Forms.CheckBox();
             grpFlask1 = new System.Windows.Forms.GroupBox();
+            lblHealLowAdvice = new System.Windows.Forms.Label();
             txtFlaskLatency1 = new System.Windows.Forms.TextBox();
             chkFlaskLatency1 = new System.Windows.Forms.CheckBox();
             chkAutoMana1 = new System.Windows.Forms.CheckBox();
@@ -114,7 +115,6 @@
             lblUpdateRateTitle = new System.Windows.Forms.Label();
             lblUpdateRate = new System.Windows.Forms.Label();
             lblSample = new System.Windows.Forms.Button();
-            lblHealLowAdvice = new System.Windows.Forms.Label();
             grpFlask.SuspendLayout();
             grpFlask5.SuspendLayout();
             grpFlask4.SuspendLayout();
@@ -137,9 +137,9 @@
             lblTitle.Font = new System.Drawing.Font("Segoe UI", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             lblTitle.Location = new System.Drawing.Point(15, 18);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new System.Drawing.Size(182, 37);
+            lblTitle.Size = new System.Drawing.Size(240, 37);
             lblTitle.TabIndex = 2;
-            lblTitle.Text = "POE1 Toolbox";
+            lblTitle.Text = "POE1 Combat Tool";
             // 
             // pnlLowLifeNow
             // 
@@ -498,6 +498,17 @@
             grpFlask1.TabIndex = 16;
             grpFlask1.TabStop = false;
             grpFlask1.Text = "Flask 1";
+            // 
+            // lblHealLowAdvice
+            // 
+            lblHealLowAdvice.AutoSize = true;
+            lblHealLowAdvice.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            lblHealLowAdvice.ForeColor = System.Drawing.Color.Red;
+            lblHealLowAdvice.Location = new System.Drawing.Point(212, -3);
+            lblHealLowAdvice.Name = "lblHealLowAdvice";
+            lblHealLowAdvice.Size = new System.Drawing.Size(241, 15);
+            lblHealLowAdvice.TabIndex = 24;
+            lblHealLowAdvice.Text = "* Heal low will ignore flask cooldown setting";
             // 
             // txtFlaskLatency1
             // 
@@ -1090,17 +1101,6 @@
             lblSample.Text = "SAMPLE";
             lblSample.UseVisualStyleBackColor = true;
             lblSample.Click += lblSample_Click;
-            // 
-            // lblHealLowAdvice
-            // 
-            lblHealLowAdvice.AutoSize = true;
-            lblHealLowAdvice.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            lblHealLowAdvice.ForeColor = System.Drawing.Color.Red;
-            lblHealLowAdvice.Location = new System.Drawing.Point(212, -3);
-            lblHealLowAdvice.Name = "lblHealLowAdvice";
-            lblHealLowAdvice.Size = new System.Drawing.Size(241, 15);
-            lblHealLowAdvice.TabIndex = 24;
-            lblHealLowAdvice.Text = "* Heal low will ignore flask cooldown setting";
             // 
             // Main
             // 

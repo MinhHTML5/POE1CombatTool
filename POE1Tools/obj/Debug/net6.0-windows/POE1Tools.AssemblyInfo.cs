@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("POE1Tools")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af3fa6f79e852f400c64a0e3b51b11bcf323aeef")]
 [assembly: System.Reflection.AssemblyProductAttribute("POE1Tools")]
 [assembly: System.Reflection.AssemblyTitleAttribute("POE1Tools")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

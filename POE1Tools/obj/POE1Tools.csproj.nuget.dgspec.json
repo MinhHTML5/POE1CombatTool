@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "F:\\POE1Tools\\POE1Tools\\POE1Tools.csproj": {}
+    "E:\\Works\\Programming\\POE1CombatTool\\POE1Tools\\POE1Tools.csproj": {}
   },
   "projects": {
-    "F:\\POE1Tools\\POE1Tools\\POE1Tools.csproj": {
+    "E:\\Works\\Programming\\POE1CombatTool\\POE1Tools\\POE1Tools.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\POE1Tools\\POE1Tools\\POE1Tools.csproj",
+        "projectUniqueName": "E:\\Works\\Programming\\POE1CombatTool\\POE1Tools\\POE1Tools.csproj",
         "projectName": "POE1Tools",
-        "projectPath": "F:\\POE1Tools\\POE1Tools\\POE1Tools.csproj",
-        "packagesPath": "C:\\Users\\minh.PLAYSTUDIOSASIA\\.nuget\\packages\\",
-        "outputPath": "F:\\POE1Tools\\POE1Tools\\obj\\",
+        "projectPath": "E:\\Works\\Programming\\POE1CombatTool\\POE1Tools\\POE1Tools.csproj",
+        "packagesPath": "C:\\Users\\minhh\\.nuget\\packages\\",
+        "outputPath": "E:\\Works\\Programming\\POE1CombatTool\\POE1Tools\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\minh.PLAYSTUDIOSASIA\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\minhh\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -39,7 +39,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net6.0-windows7.0": {
@@ -58,19 +59,19 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[6.0.28, 6.0.28]"
+              "version": "[6.0.36, 6.0.36]"
             },
             {
               "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[6.0.28, 6.0.28]"
+              "version": "[6.0.36, 6.0.36]"
             },
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[6.0.28, 6.0.28]"
+              "version": "[6.0.36, 6.0.36]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[6.0.28, 6.0.28]"
+              "version": "[6.0.36, 6.0.36]"
             }
           ],
           "frameworkReferences": {
@@ -81,7 +82,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203\\RuntimeIdentifierGraph.json"
         }
       }
     }
