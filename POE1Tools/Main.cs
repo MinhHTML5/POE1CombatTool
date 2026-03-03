@@ -20,7 +20,6 @@ namespace POE1Tools
 
         private FlaskModule _flaskModule;
         private SkillModule _skillModule;
-        private WASDModule _wasdModule;
 
         public bool started = false;
 
@@ -54,7 +53,6 @@ namespace POE1Tools
         {
             _flaskModule = new FlaskModule(this, _windowsUtil, _inputHook, _colorUtil);
             _skillModule = new SkillModule(this, _windowsUtil, _inputHook, _flaskModule);
-            _wasdModule = new WASDModule(this, _windowsUtil, _inputHook, _colorUtil);
 
             _inputHook.RegisterRawInputDevices(this.Handle, OnMouseKeyEvent, OnKeyEvent);
 
@@ -72,7 +70,6 @@ namespace POE1Tools
             btnStartStop.Text = "STOP";
             _flaskModule.Start();
             _skillModule.Start();
-            _wasdModule.Start();
         }
 
         private void Stop()
@@ -80,7 +77,6 @@ namespace POE1Tools
             btnStartStop.Text = "START";
             _flaskModule.Stop();
             _skillModule.Stop();
-            _wasdModule.Stop();
         }
 
         private void MainLoop()
@@ -122,7 +118,6 @@ namespace POE1Tools
 
             _flaskModule.MainLoop(deltaTime, shouldDoLogic, started);
             _skillModule.MainLoop(deltaTime, shouldDoLogic, started);
-            _wasdModule.MainLoop(deltaTime, shouldDoLogic, started);
         }
 
 
@@ -145,7 +140,7 @@ namespace POE1Tools
             }
             else if ((key == Keys.Left || key == Keys.Up || key == Keys.Right || key == Keys.Down) && isControlDown == false)
             {
-                _wasdModule.HandleWASD(key, isDown);
+
             }
         }
 

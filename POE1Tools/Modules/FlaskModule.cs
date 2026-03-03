@@ -169,7 +169,7 @@ namespace POE1Tools.Modules
                     {
                         int checkIndex = _autoHealLowIndex + i;
                         if (checkIndex > 4) checkIndex -= 5;
-                        if (healLowFlaskIndexArray[checkIndex] == true)
+                        if (healLowFlaskIndexArray[checkIndex] == true && _autoFlaskLatencyCooldown[checkIndex] <= 0)
                         {
                             PressFlaskKey(checkIndex);
                             _autoHealLowIndex = checkIndex;

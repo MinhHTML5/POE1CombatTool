@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Q4nMqsZbj+4=",
+  "dgSpecHash": "5DV3moT0BRU=",
   "success": true,
   "projectFilePath": "E:\\Works\\Programming\\POE1CombatTool\\POE1Tools\\POE1Tools.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\minhh\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.36\\microsoft.windowsdesktop.app.ref.6.0.36.nupkg.sha512",
-    "C:\\Users\\minhh\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.36\\microsoft.netcore.app.ref.6.0.36.nupkg.sha512",
-    "C:\\Users\\minhh\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.36\\microsoft.aspnetcore.app.ref.6.0.36.nupkg.sha512",
-    "C:\\Users\\minhh\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.36\\microsoft.netcore.app.host.win-x64.6.0.36.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

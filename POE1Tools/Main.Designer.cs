@@ -61,7 +61,6 @@
             chkAutoHealHigh2 = new System.Windows.Forms.CheckBox();
             chkAutoHealLow2 = new System.Windows.Forms.CheckBox();
             grpFlask1 = new System.Windows.Forms.GroupBox();
-            lblHealLowAdvice = new System.Windows.Forms.Label();
             txtFlaskLatency1 = new System.Windows.Forms.TextBox();
             chkFlaskLatency1 = new System.Windows.Forms.CheckBox();
             chkAutoMana1 = new System.Windows.Forms.CheckBox();
@@ -115,6 +114,7 @@
             lblUpdateRateTitle = new System.Windows.Forms.Label();
             lblUpdateRate = new System.Windows.Forms.Label();
             lblSample = new System.Windows.Forms.Button();
+            lblHealLowAdvice = new System.Windows.Forms.Label();
             grpFlask.SuspendLayout();
             grpFlask5.SuspendLayout();
             grpFlask4.SuspendLayout();
@@ -134,7 +134,7 @@
             // lblTitle
             // 
             lblTitle.AutoSize = true;
-            lblTitle.Font = new System.Drawing.Font("Segoe UI", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblTitle.Font = new System.Drawing.Font("Segoe UI", 20.25F);
             lblTitle.Location = new System.Drawing.Point(15, 18);
             lblTitle.Name = "lblTitle";
             lblTitle.Size = new System.Drawing.Size(240, 37);
@@ -185,7 +185,7 @@
             // lblHideout
             // 
             lblHideout.AutoSize = true;
-            lblHideout.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            lblHideout.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold);
             lblHideout.ForeColor = System.Drawing.Color.Red;
             lblHideout.Location = new System.Drawing.Point(521, 545);
             lblHideout.Name = "lblHideout";
@@ -499,17 +499,6 @@
             grpFlask1.TabStop = false;
             grpFlask1.Text = "Flask 1";
             // 
-            // lblHealLowAdvice
-            // 
-            lblHealLowAdvice.AutoSize = true;
-            lblHealLowAdvice.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            lblHealLowAdvice.ForeColor = System.Drawing.Color.Red;
-            lblHealLowAdvice.Location = new System.Drawing.Point(212, -3);
-            lblHealLowAdvice.Name = "lblHealLowAdvice";
-            lblHealLowAdvice.Size = new System.Drawing.Size(241, 15);
-            lblHealLowAdvice.TabIndex = 24;
-            lblHealLowAdvice.Text = "* Heal low will ignore flask cooldown setting";
-            // 
             // txtFlaskLatency1
             // 
             txtFlaskLatency1.Location = new System.Drawing.Point(328, 29);
@@ -596,7 +585,7 @@
             // lblDeltaTimeTitle
             // 
             lblDeltaTimeTitle.AutoSize = true;
-            lblDeltaTimeTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblDeltaTimeTitle.Font = new System.Drawing.Font("Segoe UI", 9F);
             lblDeltaTimeTitle.ForeColor = System.Drawing.Color.Black;
             lblDeltaTimeTitle.Location = new System.Drawing.Point(13, 143);
             lblDeltaTimeTitle.Name = "lblDeltaTimeTitle";
@@ -607,7 +596,7 @@
             // lblDeltaTime
             // 
             lblDeltaTime.AutoSize = true;
-            lblDeltaTime.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblDeltaTime.Font = new System.Drawing.Font("Segoe UI", 9F);
             lblDeltaTime.ForeColor = System.Drawing.Color.Black;
             lblDeltaTime.Location = new System.Drawing.Point(63, 143);
             lblDeltaTime.Name = "lblDeltaTime";
@@ -743,7 +732,7 @@
             // 
             // btnStartStop
             // 
-            btnStartStop.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            btnStartStop.Font = new System.Drawing.Font("Segoe UI", 12F);
             btnStartStop.Location = new System.Drawing.Point(731, 575);
             btnStartStop.Name = "btnStartStop";
             btnStartStop.Size = new System.Drawing.Size(124, 33);
@@ -755,7 +744,7 @@
             // lblSaveSettings
             // 
             lblSaveSettings.AutoSize = true;
-            lblSaveSettings.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            lblSaveSettings.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold);
             lblSaveSettings.ForeColor = System.Drawing.Color.Black;
             lblSaveSettings.Location = new System.Drawing.Point(521, 593);
             lblSaveSettings.Name = "lblSaveSettings";
@@ -1038,7 +1027,7 @@
             // lblHideout2
             // 
             lblHideout2.AutoSize = true;
-            lblHideout2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            lblHideout2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold);
             lblHideout2.ForeColor = System.Drawing.Color.Red;
             lblHideout2.Location = new System.Drawing.Point(521, 560);
             lblHideout2.Name = "lblHideout2";
@@ -1049,7 +1038,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            label1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold);
             label1.ForeColor = System.Drawing.Color.Red;
             label1.Location = new System.Drawing.Point(521, 575);
             label1.Name = "label1";
@@ -1072,7 +1061,7 @@
             // lblUpdateRateTitle
             // 
             lblUpdateRateTitle.AutoSize = true;
-            lblUpdateRateTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            lblUpdateRateTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold);
             lblUpdateRateTitle.ForeColor = System.Drawing.Color.Black;
             lblUpdateRateTitle.Location = new System.Drawing.Point(180, 494);
             lblUpdateRateTitle.Name = "lblUpdateRateTitle";
@@ -1083,7 +1072,7 @@
             // lblUpdateRate
             // 
             lblUpdateRate.AutoSize = true;
-            lblUpdateRate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblUpdateRate.Font = new System.Drawing.Font("Segoe UI", 9F);
             lblUpdateRate.ForeColor = System.Drawing.Color.Black;
             lblUpdateRate.Location = new System.Drawing.Point(180, 517);
             lblUpdateRate.Name = "lblUpdateRate";
@@ -1093,7 +1082,7 @@
             // 
             // lblSample
             // 
-            lblSample.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblSample.Font = new System.Drawing.Font("Segoe UI", 12F);
             lblSample.Location = new System.Drawing.Point(731, 539);
             lblSample.Name = "lblSample";
             lblSample.Size = new System.Drawing.Size(124, 33);
@@ -1101,6 +1090,17 @@
             lblSample.Text = "SAMPLE";
             lblSample.UseVisualStyleBackColor = true;
             lblSample.Click += lblSample_Click;
+            // 
+            // lblHealLowAdvice
+            // 
+            lblHealLowAdvice.AutoSize = true;
+            lblHealLowAdvice.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold);
+            lblHealLowAdvice.ForeColor = System.Drawing.Color.Red;
+            lblHealLowAdvice.Location = new System.Drawing.Point(155, 0);
+            lblHealLowAdvice.Name = "lblHealLowAdvice";
+            lblHealLowAdvice.Size = new System.Drawing.Size(290, 15);
+            lblHealLowAdvice.TabIndex = 24;
+            lblHealLowAdvice.Text = "* If heal low, it's recommended to set cooldown to 30";
             // 
             // Main
             // 
