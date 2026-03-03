@@ -173,6 +173,7 @@ namespace POE1Tools.Modules
                         {
                             PressFlaskKey(checkIndex);
                             _autoHealLowIndex = checkIndex;
+                            _autoFlaskLatencyCooldown[checkIndex] = latencyAmountArray[checkIndex];
                             break;
                         }
                     }
