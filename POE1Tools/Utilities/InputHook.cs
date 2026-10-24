@@ -14,6 +14,8 @@ namespace POE1Tools.Utilities
         private Action<Keys, bool, bool> _onKeyEvent;
         private bool _controlPressing = false;
 
+        // True while the event being dispatched to the callbacks was injected by software
+        public bool LastEventInjected { get; private set; }
 
         [DllImport("User32.dll")]
         static extern uint GetRawInputData(IntPtr hRawInput, uint uiCommand, IntPtr pData, ref uint pcbSize, uint cbSizeHeader);
@@ -113,6 +115,9 @@ namespace POE1Tools.Utilities
 
                 RAWINPUT raw = Marshal.PtrToStructure<RAWINPUT>(buffer);
 
+                // Injected input (SendInput / keybd_event, including our own) has no source device
+                LastEventInjected = raw.header.hDevice == IntPtr.Zero;
+
                 if (raw.header.dwType == 0) // Mouse
                 {
                     ushort buttonFlags = raw.mouse.usButtonFlags;
@@ -139,11 +144,7 @@ namespace POE1Tools.Utilities
                     {
                         _controlPressing = isDown;
                     }
-                    else 
-                    {
-                        _onKeyEvent((Keys)vk, isDown, _controlPressing);
-                    }
-      
+                    _onKeyEvent((Keys)vk, isDown, _controlPressing);
                 }
             }
             finally
@@ -171,6 +172,20 @@ namespace POE1Tools.Utilities
             {
                 keybd_event((byte)Keys.ControlKey, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
             }
+        }
+
+
+
+
+
+        public void SendKeyDown(Keys key)
+        {
+            keybd_event((byte)key, 0, KEYEVENTF_KEYDOWN, UIntPtr.Zero);
+        }
+
+        public void SendKeyUp(Keys key)
+        {
+            keybd_event((byte)key, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
         }
 
 
@@ -261,6 +276,111 @@ namespace POE1Tools.Utilities
             inputs[0].mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
 
             SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT)));
+        }
+
+        const uint MOUSEEVENTF_RIGHTDOWN = 0x0008;
+        const uint MOUSEEVENTF_RIGHTUP = 0x0010;
+        const uint MOUSEEVENTF_MIDDLEDOWN = 0x0020;
+        const uint MOUSEEVENTF_MIDDLEUP = 0x0040;
+        const uint MOUSEEVENTF_XDOWN = 0x0080;
+        const uint MOUSEEVENTF_XUP = 0x0100;
+        const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
+
+        // A pixel to percent of the screen size (0 - 100). It points at the center of the pixel,
+        // so converting back on the same resolution always gives the same pixel
+        public static double PixelToPercent(int pixel, int screenSize)
+        {
+            return Math.Round((pixel + 0.5) * 100.0 / screenSize, 4);
+        }
+
+        public static int PercentToPixel(double percent, int screenSize)
+        {
+            int pixel = (int)Math.Floor(percent * screenSize / 100.0);
+            return Math.Max(0, Math.Min(screenSize - 1, pixel));
+        }
+
+        // Percent of the main monitor size, to the pixel it is on the current resolution
+        public Point PercentToPixelPosition(double xPercent, double yPercent)
+        {
+            return new Point(PercentToPixel(xPercent, GetSystemMetrics(0)), PercentToPixel(yPercent, GetSystemMetrics(1)));
+        }
+
+        // Where the cursor is, in percent of the main monitor size
+        public void GetCurrentMousePercentPosition(out double xPercent, out double yPercent)
+        {
+            GetCursorPos(out POINT pos);
+            xPercent = PixelToPercent(pos.X, GetSystemMetrics(0));
+            yPercent = PixelToPercent(pos.Y, GetSystemMetrics(1));
+        }
+
+        public Point GetCurrentMousePixelPosition()
+        {
+            GetCursorPos(out POINT pos);
+            return new Point(pos.X, pos.Y);
+        }
+
+        // Move the cursor to the exact pixel (x, y) of the main monitor
+        public void MoveMouseTo(int x, int y)
+        {
+            INPUT[] inputs = new INPUT[1];
+            inputs[0] = CreateMoveInput(x, y);
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT)));
+        }
+
+        private INPUT CreateMoveInput(int x, int y)
+        {
+            int screenWidth = GetSystemMetrics(0);
+            int screenHeight = GetSystemMetrics(1);
+
+            // Aim at the pixel center so the absolute coordinate maps back to the exact pixel
+            INPUT input = new INPUT();
+            input.type = INPUT_MOUSE;
+            input.mi.dx = (int)(((long)x * 65536 + 32768) / screenWidth);
+            input.mi.dy = (int)(((long)y * 65536 + 32768) / screenHeight);
+            input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
+            return input;
+        }
+
+        // Move the cursor to (x, y) then press or release the given button there
+        public void SendMouseButton(MouseButtons button, bool isDown, int x, int y)
+        {
+            uint flags;
+            uint mouseData = 0;
+            switch (button)
+            {
+                case MouseButtons.Left: flags = isDown ? MOUSEEVENTF_LEFTDOWN : MOUSEEVENTF_LEFTUP; break;
+                case MouseButtons.Right: flags = isDown ? MOUSEEVENTF_RIGHTDOWN : MOUSEEVENTF_RIGHTUP; break;
+                case MouseButtons.Middle: flags = isDown ? MOUSEEVENTF_MIDDLEDOWN : MOUSEEVENTF_MIDDLEUP; break;
+                case MouseButtons.XButton1: flags = isDown ? MOUSEEVENTF_XDOWN : MOUSEEVENTF_XUP; mouseData = 1; break;
+                case MouseButtons.XButton2: flags = isDown ? MOUSEEVENTF_XDOWN : MOUSEEVENTF_XUP; mouseData = 2; break;
+                default: return;
+            }
+
+            INPUT[] inputs = new INPUT[2];
+            inputs[0] = CreateMoveInput(x, y);
+
+            inputs[1].type = INPUT_MOUSE;
+            inputs[1].mi.mouseData = mouseData;
+            inputs[1].mi.dwFlags = flags;
+
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT)));
+        }
+
+        // Like SendKeyDown / SendKeyUp, but flags extended keys (arrows, Insert, Delete...) properly
+        public void SendKey(Keys key, bool isDown)
+        {
+            uint flags = isDown ? (uint)KEYEVENTF_KEYDOWN : (uint)KEYEVENTF_KEYUP;
+            switch (key)
+            {
+                case Keys.Up: case Keys.Down: case Keys.Left: case Keys.Right:
+                case Keys.Insert: case Keys.Delete: case Keys.Home: case Keys.End:
+                case Keys.PageUp: case Keys.PageDown:
+                case Keys.LWin: case Keys.RWin: case Keys.Apps:
+                case Keys.Divide: case Keys.NumLock:
+                    flags |= KEYEVENTF_EXTENDEDKEY;
+                    break;
+            }
+            keybd_event((byte)key, 0, flags, UIntPtr.Zero);
         }
 
         public void ShowMouseCursor (bool show)

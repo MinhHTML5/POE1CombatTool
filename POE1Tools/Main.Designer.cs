@@ -86,6 +86,7 @@
             lblSaveSettings = new System.Windows.Forms.Label();
             btnSaveSettings = new System.Windows.Forms.Button();
             btnLoadSettings = new System.Windows.Forms.Button();
+            btnAutomation = new System.Windows.Forms.Button();
             grpSettings = new System.Windows.Forms.GroupBox();
             grpSkill = new System.Windows.Forms.GroupBox();
             grpSkill4 = new System.Windows.Forms.GroupBox();
@@ -762,6 +763,16 @@
             btnSaveSettings.UseVisualStyleBackColor = true;
             btnSaveSettings.Click += btnSaveSettings_Click;
             // 
+            // btnAutomation
+            // 
+            btnAutomation.Location = new System.Drawing.Point(521, 621);
+            btnAutomation.Name = "btnAutomation";
+            btnAutomation.Size = new System.Drawing.Size(334, 33);
+            btnAutomation.TabIndex = 55;
+            btnAutomation.Text = "Setup automation";
+            btnAutomation.UseVisualStyleBackColor = true;
+            btnAutomation.Click += btnAutomation_Click;
+            // 
             // btnLoadSettings
             // 
             btnLoadSettings.Location = new System.Drawing.Point(15, 70);
@@ -1106,7 +1117,8 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(871, 621);
+            ClientSize = new System.Drawing.Size(871, 665);
+            Controls.Add(btnAutomation);
             Controls.Add(lblSample);
             Controls.Add(lblUpdateRate);
             Controls.Add(lblUpdateRateTitle);
@@ -1204,6 +1216,7 @@
         public System.Windows.Forms.Label lblSaveSettings;
         public System.Windows.Forms.Button btnSaveSettings;
         public System.Windows.Forms.Button btnLoadSettings;
+        public System.Windows.Forms.Button btnAutomation;
         public System.Windows.Forms.GroupBox grpSettings;
         public System.Windows.Forms.GroupBox grpSkill;
         public System.Windows.Forms.GroupBox grpSkill1;

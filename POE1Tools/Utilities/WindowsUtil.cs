@@ -39,6 +39,11 @@ namespace POE1Tools.Utilities
             _overlayForm.SetDrawTextOn(enabled);
         }
 
+        public void SetAutomationMode(bool enabled)
+        {
+            _overlayForm.SetAutomationMode(enabled);
+        }
+
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
@@ -81,6 +86,7 @@ namespace POE1Tools.Utilities
 
         public bool enableDebug = true;
         public bool enableDrawText = false;
+        public bool automationMode = false;
         private List<Point> drawPoints = new List<Point>();
 
         public OverlayForm()
@@ -114,6 +120,12 @@ namespace POE1Tools.Utilities
             enableDrawText = enabled;
         }
 
+        public void SetAutomationMode(bool enabled)
+        {
+            automationMode = enabled;
+            Invalidate();
+        }
+
         public Point GetPixelPosition(float xRatio, float yRatio)
         {
             int screenWidth = Screen.PrimaryScreen.Bounds.Width;
@@ -143,7 +155,7 @@ namespace POE1Tools.Utilities
                     {
                         using (Brush brush = new SolidBrush(Color.LimeGreen))
                         {
-                            e.Graphics.DrawString("POE Combat Tool ON", font, brush, _textPoint.X, _textPoint.Y);
+                            e.Graphics.DrawString(automationMode ? "POE Combat Tool ON - Automation mode" : "POE Combat Tool ON", font, brush, _textPoint.X, _textPoint.Y);
                         }
                     }
                     else

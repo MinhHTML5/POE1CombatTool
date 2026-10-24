@@ -20,6 +20,8 @@ namespace POE1Tools
 
         private FlaskModule _flaskModule;
         private SkillModule _skillModule;
+        private AutomationModule _automationModule;
+        private AutomationForm _automationForm;
 
         public bool started = false;
 
@@ -53,6 +55,7 @@ namespace POE1Tools
         {
             _flaskModule = new FlaskModule(this, _windowsUtil, _inputHook, _colorUtil);
             _skillModule = new SkillModule(this, _windowsUtil, _inputHook, _flaskModule);
+            _automationModule = new AutomationModule(this, _windowsUtil, _inputHook);
 
             _inputHook.RegisterRawInputDevices(this.Handle, OnMouseKeyEvent, OnKeyEvent);
 
@@ -70,6 +73,7 @@ namespace POE1Tools
             btnStartStop.Text = "STOP";
             _flaskModule.Start();
             _skillModule.Start();
+            _automationModule.Start();
         }
 
         private void Stop()
@@ -77,6 +81,7 @@ namespace POE1Tools
             btnStartStop.Text = "START";
             _flaskModule.Stop();
             _skillModule.Stop();
+            _automationModule.Stop();
         }
 
         private void MainLoop()
@@ -88,10 +93,12 @@ namespace POE1Tools
             _stopwatch.Restart();
 
             // Check for game focus
-            if (_windowsUtil.GetCurrentWindowsProcessName() != "PathOfExile" && started)
+            string currentProcessName = _windowsUtil.GetCurrentWindowsProcessName();
+            bool inFocus = currentProcessName == "PathOfExile";
+            if (!inFocus && started)
             {
                 shouldDoLogic = false;
-                lblMessage.Text = "POE is out of focus. Current window: " + _windowsUtil.GetCurrentWindowsProcessName();
+                lblMessage.Text = "POE is out of focus. Current window: " + currentProcessName;
             }
 
             // Check for loading screen
@@ -113,11 +120,13 @@ namespace POE1Tools
             }
             else if (shouldDoLogic)
             {
-                lblMessage.Text = "Toolbox is working...";
+                lblMessage.Text = _automationModule.IsPlaying ? "Toolbox is working... (Automation mode)" : "Toolbox is working...";
             }
 
             _flaskModule.MainLoop(deltaTime, shouldDoLogic, started);
             _skillModule.MainLoop(deltaTime, shouldDoLogic, started);
+            // Automation keeps playing through loading screens, it only cares about the game focus
+            _automationModule.MainLoop(deltaTime, inFocus, started);
         }
 
 
@@ -126,6 +135,8 @@ namespace POE1Tools
 
         private void OnKeyEvent(Keys key, bool isDown, bool isControlDown)
         {
+            _automationModule.OnKeyEvent(key, isDown, isControlDown);
+
             if ((key == Keys.B || key == Keys.Space) && !isDown && isControlDown)
             {
                 started = !started;
@@ -146,6 +157,8 @@ namespace POE1Tools
 
         private void OnMouseKeyEvent(MouseButtons key, bool isDown)
         {
+            _automationModule.OnMouseEvent(key, isDown);
+
             if (key == MouseButtons.XButton2 && isDown)
             {
                 //_rakeModule.RakeKeyDown();
@@ -464,6 +477,19 @@ namespace POE1Tools
         private void btnLoadSettings_Click(object sender, EventArgs e)
         {
             LoadSettings();
+        }
+
+        private void btnAutomation_Click(object sender, EventArgs e)
+        {
+            if (_automationForm != null && !_automationForm.IsDisposed)
+            {
+                _automationForm.Activate();
+                return;
+            }
+
+            _automationForm = new AutomationForm(_automationModule);
+            _automationForm.FormClosed += (s, args) => _automationForm = null;
+            _automationForm.Show(this);
         }
     }
 }

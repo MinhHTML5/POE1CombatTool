@@ -2,8 +2,20 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="AutomationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="CaptureForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ItemPickupEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Main.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="NodeCanvas.cs">
+      <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
 </Project>
