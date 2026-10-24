@@ -143,14 +143,14 @@ namespace POE1Tools.Utilities
                     {
                         using (Brush brush = new SolidBrush(Color.LimeGreen))
                         {
-                            e.Graphics.DrawString("POE Toolbox ON", font, brush, _textPoint.X, _textPoint.Y);
+                            e.Graphics.DrawString("POE Combat Tool ON", font, brush, _textPoint.X, _textPoint.Y);
                         }
                     }
                     else
                     {
                         using (Brush brush = new SolidBrush(Color.Red))
                         {
-                            e.Graphics.DrawString("POE Toolbox OFF", font, brush, _textPoint.X, _textPoint.Y);
+                            e.Graphics.DrawString("POE Combat Tool OFF", font, brush, _textPoint.X, _textPoint.Y);
                         }
                     }
                 }
