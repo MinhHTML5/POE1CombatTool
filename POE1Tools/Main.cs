@@ -44,25 +44,29 @@ namespace POE1Tools
 
         private ComboBox _cboScreen;
         private Label _lblScreen;
+        private Button _btnDetectScreen;
 
         private void CreateScreenSelector()
         {
-            _lblScreen = new Label
-            {
-                AutoSize = true,
-                Text = "Game screen:",
-                Location = new Point(300, 22)
-            };
+            _lblScreen = new Label { AutoSize = true, Text = "Game screen:", Location = new Point(300, 22) };
             _cboScreen = new ComboBox
             {
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Location = new Point(300, 40),
-                Size = new Size(206, 23)
+                Size = new Size(140, 23)
             };
+            _btnDetectScreen = new Button
+            {
+                Text = "Detect",
+                Location = new Point(446, 39),
+                Size = new Size(60, 25)
+            };
+            _btnDetectScreen.Click += (s, e) => DetectGameScreen();
             PopulateScreens();
             _cboScreen.SelectedIndexChanged += cboScreen_SelectedIndexChanged;
             Controls.Add(_lblScreen);
             Controls.Add(_cboScreen);
+            Controls.Add(_btnDetectScreen);
         }
 
         private void PopulateScreens()
@@ -99,6 +103,15 @@ namespace POE1Tools
             public override string ToString() => _text;
         }
 
+        private void SelectScreen(Screen screen)
+        {
+            int index = _cboScreen.Items.Cast<ScreenItem>().ToList().FindIndex(i => i.Screen.DeviceName == screen.DeviceName);
+            if (index < 0) return;
+            _cboScreen.SelectedIndex = index;
+            // SelectedIndexChanged doesn't fire if the index is unchanged; make sure state is applied
+            cboScreen_SelectedIndexChanged(null, EventArgs.Empty);
+        }
+
         // Select the saved screen; fall back to the primary screen if it isn't connected.
         private void SelectSavedScreen(string key)
         {
@@ -117,8 +130,32 @@ namespace POE1Tools
             if (index < 0)
                 index = _cboScreen.Items.Cast<ScreenItem>().ToList().FindIndex(s => s.Screen.Primary);
             _cboScreen.SelectedIndex = index < 0 ? 0 : index;
-            // SelectedIndexChanged doesn't fire if the index is unchanged; make sure state is applied
             cboScreen_SelectedIndexChanged(null, EventArgs.Empty);
+        }
+
+        // Find the Path of Exile window and switch the dropdown to the screen it is on.
+        // Returns false (selection unchanged) if the game isn't running or has no window.
+        private bool DetectGameScreen()
+        {
+            IntPtr hwnd = IntPtr.Zero;
+            foreach (Process proc in Process.GetProcesses())
+            {
+                try
+                {
+                    if (hwnd == IntPtr.Zero
+                        && proc.ProcessName.StartsWith("PathOfExile", StringComparison.OrdinalIgnoreCase)
+                        && proc.MainWindowHandle != IntPtr.Zero)
+                    {
+                        hwnd = proc.MainWindowHandle;
+                    }
+                }
+                catch { }
+                finally { proc.Dispose(); }
+            }
+            if (hwnd == IntPtr.Zero) return false;
+
+            SelectScreen(Screen.FromHandle(hwnd));
+            return true;
         }
 
         private const int WM_INPUT = 0x00FF;
@@ -146,6 +183,7 @@ namespace POE1Tools
             _stopwatch.Start();
 
             LoadSettings();
+            DetectGameScreen(); // if the game is running, its screen wins over the saved one
         }
 
         private void Start()
