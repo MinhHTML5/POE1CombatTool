@@ -49,6 +49,11 @@ namespace POE1Tools.Utilities
             _overlayForm.SetAutomationMode(enabled);
         }
 
+        public void SetHideoutDisabled(bool disabled)
+        {
+            _overlayForm.SetHideoutDisabled(disabled);
+        }
+
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
@@ -92,7 +97,22 @@ namespace POE1Tools.Utilities
         public bool enableDebug = true;
         public bool enableDrawText = false;
         public bool automationMode = false;
+        public bool hideoutDisabled = false;
         private List<Point> drawPoints = new List<Point>();
+        private readonly Image _poeIcon = LoadPoeIcon();
+
+        private static Image LoadPoeIcon()
+        {
+            try
+            {
+                using (var stream = typeof(OverlayForm).Assembly.GetManifestResourceStream("POE1Tools.Icon.png"))
+                {
+                    // Copy so the image doesn't depend on the stream staying open
+                    return stream == null ? null : new Bitmap(Image.FromStream(stream));
+                }
+            }
+            catch { return null; }
+        }
 
         public OverlayForm()
         {
@@ -131,11 +151,19 @@ namespace POE1Tools.Utilities
         public void SetDrawTextOn(bool enabled)
         {
             enableDrawText = enabled;
+            Invalidate();
         }
 
         public void SetAutomationMode(bool enabled)
         {
             automationMode = enabled;
+            Invalidate();
+        }
+
+        public void SetHideoutDisabled(bool disabled)
+        {
+            if (hideoutDisabled == disabled) return; // called every tick, only repaint on change
+            hideoutDisabled = disabled;
             Invalidate();
         }
 
@@ -165,19 +193,39 @@ namespace POE1Tools.Utilities
                 float dpiScale = g.DpiY / 96f;
                 using (Font font = new Font("Arial", 12 * dpiScale))
                 {
-                    if (enableDrawText)
+                    string text;
+                    Color color;
+                    if (!enableDrawText)
                     {
-                        using (Brush brush = new SolidBrush(Color.LimeGreen))
-                        {
-                            e.Graphics.DrawString(automationMode ? "POE Combat Tool ON - Automation mode" : "POE Combat Tool ON", font, brush, _textPoint.X, _textPoint.Y);
-                        }
+                        text = "Combat OFF";
+                        color = Color.Red;
+                    }
+                    else if (hideoutDisabled)
+                    {
+                        text = "Combat ON (HO Disabled)";
+                        color = Color.Yellow;
                     }
                     else
                     {
-                        using (Brush brush = new SolidBrush(Color.Red))
-                        {
-                            e.Graphics.DrawString("POE Combat Tool OFF", font, brush, _textPoint.X, _textPoint.Y);
-                        }
+                        text = automationMode ? "Combat ON - Automation" : "Combat ON";
+                        color = Color.LimeGreen;
+                    }
+
+                    // PoE logo to the left of the text, vertically centered on it
+                    float textHeight = font.GetHeight(e.Graphics);
+                    if (_poeIcon != null)
+                    {
+                        float iconHeight = textHeight * 1.6f;
+                        float iconWidth = iconHeight * _poeIcon.Width / _poeIcon.Height;
+                        float iconX = _textPoint.X - iconWidth - 4;
+                        float iconY = _textPoint.Y + (textHeight - iconHeight) / 2;
+                        e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        e.Graphics.DrawImage(_poeIcon, iconX, iconY, iconWidth, iconHeight);
+                    }
+
+                    using (Brush brush = new SolidBrush(color))
+                    {
+                        e.Graphics.DrawString(text, font, brush, _textPoint.X, _textPoint.Y);
                     }
                 }
             }

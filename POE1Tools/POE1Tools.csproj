@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <EmbeddedResource Include="Icon.png" LogicalName="POE1Tools.Icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

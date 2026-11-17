@@ -40,6 +40,22 @@ namespace POE1Tools
 
             InitializeComponent();
             CreateScreenSelector();
+            CreateHideoutOption();
+        }
+
+        private readonly ClientLogReader _clientLog = new ClientLogReader();
+        private CheckBox _chkPauseInHideout;
+
+        private void CreateHideoutOption()
+        {
+            _chkPauseInHideout = new CheckBox
+            {
+                AutoSize = true,
+                Checked = true,
+                Text = "Pause flasks in hideout (reads Client.txt)",
+                Location = new Point(521, 8)
+            };
+            Controls.Add(_chkPauseInHideout);
         }
 
         private ComboBox _cboScreen;
@@ -243,7 +259,22 @@ namespace POE1Tools
                 lblMessage.Text = _automationModule.IsPlaying ? "Toolbox is working... (Automation mode)" : "Toolbox is working...";
             }
 
-            _flaskModule.MainLoop(deltaTime, shouldDoLogic, started);
+            // Hideout detection from Client.txt: flasks are paused there, and resume on entering a map
+            bool flaskLogic = shouldDoLogic;
+            bool hideoutDisabled = false;
+            if (_chkPauseInHideout.Checked)
+            {
+                _clientLog.Poll();
+                if (_clientLog.InHideout)
+                {
+                    hideoutDisabled = true;
+                    flaskLogic = false;
+                    if (shouldDoLogic && started) lblMessage.Text = "In hideout: flasks paused.";
+                }
+            }
+            _windowsUtil.SetHideoutDisabled(hideoutDisabled);
+
+            _flaskModule.MainLoop(deltaTime, flaskLogic, started);
             _skillModule.MainLoop(deltaTime, shouldDoLogic, started);
             // Automation keeps playing through loading screens, it only cares about the game focus
             _automationModule.MainLoop(deltaTime, inFocus, started);
@@ -525,6 +556,7 @@ namespace POE1Tools
 
             Properties.Settings.Default.chkDrawDebug = chkDrawDebug.Checked;
             Properties.Settings.Default.trkUpdateRate = trkUpdateRate.Value;
+            Properties.Settings.Default.pauseFlasksInHideout = _chkPauseInHideout.Checked;
             Properties.Settings.Default.selectedScreen = (_cboScreen.SelectedItem as ScreenItem)?.Key ?? "";
 
             Properties.Settings.Default.Save();
@@ -584,6 +616,8 @@ namespace POE1Tools
 
             chkDrawDebug.Checked = Properties.Settings.Default.chkDrawDebug;
             trkUpdateRate.Value = Properties.Settings.Default.trkUpdateRate;
+
+            _chkPauseInHideout.Checked = Properties.Settings.Default.pauseFlasksInHideout;
 
             PopulateScreens();
             SelectSavedScreen(Properties.Settings.Default.selectedScreen);

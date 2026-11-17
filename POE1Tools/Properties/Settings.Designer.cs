@@ -550,5 +550,17 @@ namespace POE1Tools.Properties {
                 this["selectedScreen"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool pauseFlasksInHideout {
+            get {
+                return ((bool)(this["pauseFlasksInHideout"]));
+            }
+            set {
+                this["pauseFlasksInHideout"] = value;
+            }
+        }
     }
 }
