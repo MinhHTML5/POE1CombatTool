@@ -10,6 +10,23 @@ using System.Windows.Forms;
 
 namespace POE1Tools.Utilities
 {
+    public static class ScreenHelper
+    {
+        private static Screen _current;
+
+        /// <summary>The screen the game is on. Defaults to the primary screen.</summary>
+        public static Screen Current
+        {
+            get
+            {
+                if (_current == null || !Screen.AllScreens.Any(s => s.DeviceName == _current.DeviceName))
+                    _current = Screen.PrimaryScreen;
+                return _current;
+            }
+            set { _current = value; }
+        }
+    }
+
     public class ColorUtil
     {
         [DllImport("gdi32.dll")]
@@ -39,11 +56,11 @@ namespace POE1Tools.Utilities
             _graphics = Graphics.FromImage(_bitmap);
         }
 
+        /// <summary>Absolute desktop coordinates of a ratio position on the selected screen.</summary>
         public Point GetPixelPosition(float xRatio, float yRatio)
         {
-            int screenWidth = Screen.PrimaryScreen.Bounds.Width;
-            int screenHeight = Screen.PrimaryScreen.Bounds.Height;
-            return new Point((int)(screenWidth * xRatio), (int)(screenHeight * yRatio));
+            Rectangle b = ScreenHelper.Current.Bounds;
+            return new Point(b.X + (int)(b.Width * xRatio), b.Y + (int)(b.Height * yRatio));
         }
 
         public Color GetColorAt(Point position)

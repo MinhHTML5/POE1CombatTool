@@ -538,5 +538,17 @@ namespace POE1Tools.Properties {
                 this["trkUpdateRate"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string selectedScreen {
+            get {
+                return ((string)(this["selectedScreen"]));
+            }
+            set {
+                this["selectedScreen"] = value;
+            }
+        }
     }
 }

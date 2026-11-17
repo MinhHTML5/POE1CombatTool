@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using POE1Tools.Modules;
 using POE1Tools.Utilities;
@@ -38,6 +39,86 @@ namespace POE1Tools
             _colorUtil = colorUtil;
 
             InitializeComponent();
+            CreateScreenSelector();
+        }
+
+        private ComboBox _cboScreen;
+        private Label _lblScreen;
+
+        private void CreateScreenSelector()
+        {
+            _lblScreen = new Label
+            {
+                AutoSize = true,
+                Text = "Game screen:",
+                Location = new Point(300, 22)
+            };
+            _cboScreen = new ComboBox
+            {
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Location = new Point(300, 40),
+                Size = new Size(206, 23)
+            };
+            PopulateScreens();
+            _cboScreen.SelectedIndexChanged += cboScreen_SelectedIndexChanged;
+            Controls.Add(_lblScreen);
+            Controls.Add(_cboScreen);
+        }
+
+        private void PopulateScreens()
+        {
+            Screen[] screens = Screen.AllScreens;
+            var names = MonitorNames.GetAll();
+            _cboScreen.Items.Clear();
+            for (int i = 0; i < screens.Length; i++)
+            {
+                Screen s = screens[i];
+                string name = names.TryGetValue(s.DeviceName, out string n) ? n : $"Screen {i + 1}";
+                _cboScreen.Items.Add(new ScreenItem(s, name + (s.Primary ? " (Primary)" : ""), s.DeviceName + "|" + name));
+            }
+            int selected = Array.FindIndex(screens, s => s.DeviceName == ScreenHelper.Current.DeviceName);
+            _cboScreen.SelectedIndex = selected >= 0 ? selected : 0;
+        }
+
+        private void cboScreen_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_cboScreen.SelectedItem is ScreenItem item)
+            {
+                ScreenHelper.Current = item.Screen;
+                _windowsUtil.MoveOverlayToScreen(item.Screen);
+                _flaskModule?.RefreshPoints();
+            }
+        }
+
+        private class ScreenItem
+        {
+            public Screen Screen;
+            public string Key; // "DeviceName|MonitorName", stored in settings
+            private string _text;
+            public ScreenItem(Screen screen, string text, string key) { Screen = screen; _text = text; Key = key; }
+            public override string ToString() => _text;
+        }
+
+        // Select the saved screen; fall back to the primary screen if it isn't connected.
+        private void SelectSavedScreen(string key)
+        {
+            int index = -1;
+            if (!string.IsNullOrEmpty(key))
+            {
+                string savedName = key.Contains('|') ? key.Substring(key.IndexOf('|') + 1) : key;
+                string savedDevice = key.Contains('|') ? key.Substring(0, key.IndexOf('|')) : key;
+                for (int i = 0; i < _cboScreen.Items.Count && index < 0; i++)
+                    if (((ScreenItem)_cboScreen.Items[i]).Key == key) index = i;
+                for (int i = 0; i < _cboScreen.Items.Count && index < 0; i++)
+                    if (((ScreenItem)_cboScreen.Items[i]).Key.EndsWith("|" + savedName) && !savedName.StartsWith("Screen ")) index = i;
+                for (int i = 0; i < _cboScreen.Items.Count && index < 0; i++)
+                    if (((ScreenItem)_cboScreen.Items[i]).Screen.DeviceName == savedDevice) index = i;
+            }
+            if (index < 0)
+                index = _cboScreen.Items.Cast<ScreenItem>().ToList().FindIndex(s => s.Screen.Primary);
+            _cboScreen.SelectedIndex = index < 0 ? 0 : index;
+            // SelectedIndexChanged doesn't fire if the index is unchanged; make sure state is applied
+            cboScreen_SelectedIndexChanged(null, EventArgs.Empty);
         }
 
         private const int WM_INPUT = 0x00FF;
@@ -104,8 +185,9 @@ namespace POE1Tools
             // Check for loading screen
             if (shouldDoLogic && started)
             {
-                Color cornerColor1 = _colorUtil.GetColorAt(new Point(5, Screen.PrimaryScreen.Bounds.Height - 4));
-                Color cornerColor2 = _colorUtil.GetColorAt(new Point(Screen.PrimaryScreen.Bounds.Width - 4, Screen.PrimaryScreen.Bounds.Height - 4));
+                Rectangle sb = ScreenHelper.Current.Bounds;
+                Color cornerColor1 = _colorUtil.GetColorAt(new Point(sb.X + 5, sb.Y + sb.Height - 4));
+                Color cornerColor2 = _colorUtil.GetColorAt(new Point(sb.X + sb.Width - 4, sb.Y + sb.Height - 4));
                 if (_colorUtil.IsColorSimilar(cornerColor1, Color.Black, COLOR_TOLERANCE)
                 && _colorUtil.IsColorSimilar(cornerColor2, Color.Black, COLOR_TOLERANCE))
                 {
@@ -405,7 +487,7 @@ namespace POE1Tools
 
             Properties.Settings.Default.chkDrawDebug = chkDrawDebug.Checked;
             Properties.Settings.Default.trkUpdateRate = trkUpdateRate.Value;
-
+            Properties.Settings.Default.selectedScreen = (_cboScreen.SelectedItem as ScreenItem)?.Key ?? "";
 
             Properties.Settings.Default.Save();
         }
@@ -464,6 +546,9 @@ namespace POE1Tools
 
             chkDrawDebug.Checked = Properties.Settings.Default.chkDrawDebug;
             trkUpdateRate.Value = Properties.Settings.Default.trkUpdateRate;
+
+            PopulateScreens();
+            SelectSavedScreen(Properties.Settings.Default.selectedScreen);
 
             UpdateRateChange();
         }

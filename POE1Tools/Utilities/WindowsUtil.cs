@@ -29,6 +29,11 @@ namespace POE1Tools.Utilities
             _overlayForm.RemovePoint(point);
         }
 
+        public void MoveOverlayToScreen(Screen screen)
+        {
+            _overlayForm.MoveToScreen(screen);
+        }
+
         public void SetDebugEnabled(bool enabled)
         {
             _overlayForm.SetDebugEnabled(enabled);
@@ -96,9 +101,17 @@ namespace POE1Tools.Utilities
             ShowInTaskbar = false;
             BackColor = Color.Black;
             TransparencyKey = Color.Black;
-            Bounds = Screen.PrimaryScreen.Bounds;
-            Location = Screen.PrimaryScreen.Bounds.Location;
             StartPosition = FormStartPosition.Manual;
+            Bounds = ScreenHelper.Current.Bounds;
+        }
+
+        /// <summary>Moves the overlay (and its ON/OFF label) to the given screen.</summary>
+        public void MoveToScreen(Screen screen)
+        {
+            Bounds = screen.Bounds;
+            _textPoint = GetPixelPosition(TEXT_X_RATIO, TEXT_Y_RATIO);
+            SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            Invalidate();
         }
 
         protected override void OnShown(EventArgs e)
@@ -128,8 +141,9 @@ namespace POE1Tools.Utilities
 
         public Point GetPixelPosition(float xRatio, float yRatio)
         {
-            int screenWidth = Screen.PrimaryScreen.Bounds.Width;
-            int screenHeight = Screen.PrimaryScreen.Bounds.Height;
+            // Overlay-local (client) coordinates: the form covers the selected screen
+            int screenWidth = Bounds.Width;
+            int screenHeight = Bounds.Height;
             return new Point((int)(screenWidth * xRatio), (int)(screenHeight * yRatio));
         }
 

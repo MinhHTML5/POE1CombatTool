@@ -77,6 +77,14 @@ namespace POE1Tools.Modules
             }
         }
 
+        /// <summary>Recompute the sampled pixel positions (e.g. after the selected screen changed).</summary>
+        public void RefreshPoints()
+        {
+            _autoHealLowPoint = _colorUtil.GetPixelPosition(LOW_LIFE_PIXEL_X, LOW_LIFE_PIXEL_Y);
+            _autoHealHighPoint = _colorUtil.GetPixelPosition(HIGH_LIFE_PIXEL_X, HIGH_LIFE_PIXEL_Y);
+            _autoManaPoint = _colorUtil.GetPixelPosition(MANA_PIXEL_X, MANA_PIXEL_Y);
+        }
+
         public void Sample()
         {
             _autoHealLowColor = _colorUtil.GetColorAt(_autoHealLowPoint);
