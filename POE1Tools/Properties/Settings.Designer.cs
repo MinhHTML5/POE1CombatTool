@@ -562,5 +562,29 @@ namespace POE1Tools.Properties {
                 this["pauseFlasksInHideout"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chkHealLowIgnoreCooldown {
+            get {
+                return ((bool)(this["chkHealLowIgnoreCooldown"]));
+            }
+            set {
+                this["chkHealLowIgnoreCooldown"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public string txtHealLowCooldown {
+            get {
+                return ((string)(this["txtHealLowCooldown"]));
+            }
+            set {
+                this["txtHealLowCooldown"] = value;
+            }
+        }
     }
 }

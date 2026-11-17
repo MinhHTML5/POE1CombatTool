@@ -41,6 +41,7 @@ namespace POE1Tools
             InitializeComponent();
             CreateScreenSelector();
             CreateHideoutOption();
+            CreateHealLowCooldownOption();
         }
 
         private readonly ClientLogReader _clientLog = new ClientLogReader();
@@ -56,6 +57,50 @@ namespace POE1Tools
                 Location = new Point(521, 8)
             };
             Controls.Add(_chkPauseInHideout);
+        }
+
+        private CheckBox _chkHealLowIgnoreCooldown;
+        private TextBox _txtHealLowCooldown;
+
+        // Sits in the header row of the "Flask usage" group, right of its title
+        private void CreateHealLowCooldownOption()
+        {
+            _chkHealLowIgnoreCooldown = new CheckBox
+            {
+                AutoSize = true,
+                Text = "Heal low: ignore flask cooldown, use (ms):",
+                Location = new Point(90, 0)
+            };
+            _chkHealLowIgnoreCooldown.CheckedChanged += (s, e) =>
+            {
+                _txtHealLowCooldown.Enabled = _chkHealLowIgnoreCooldown.Checked;
+                _flaskModule?.SetHealLowIgnoreCooldown(_chkHealLowIgnoreCooldown.Checked);
+            };
+
+            _txtHealLowCooldown = new TextBox
+            {
+                Text = "30",
+                Enabled = false,
+                Location = new Point(355, 0),
+                Size = new Size(60, 23)
+            };
+            _txtHealLowCooldown.TextChanged += (s, e) =>
+            {
+                if (int.TryParse(_txtHealLowCooldown.Text, out int value) && value >= 0)
+                {
+                    _txtHealLowCooldown.BackColor = SystemColors.Window;
+                    _flaskModule?.SetHealLowCooldown(value);
+                }
+                else
+                {
+                    _txtHealLowCooldown.BackColor = Color.LightCoral;
+                }
+            };
+
+            grpFlask.Controls.Add(_chkHealLowIgnoreCooldown);
+            grpFlask.Controls.Add(_txtHealLowCooldown);
+            _chkHealLowIgnoreCooldown.BringToFront();
+            _txtHealLowCooldown.BringToFront();
         }
 
         private ComboBox _cboScreen;
@@ -557,6 +602,8 @@ namespace POE1Tools
             Properties.Settings.Default.chkDrawDebug = chkDrawDebug.Checked;
             Properties.Settings.Default.trkUpdateRate = trkUpdateRate.Value;
             Properties.Settings.Default.pauseFlasksInHideout = _chkPauseInHideout.Checked;
+            Properties.Settings.Default.chkHealLowIgnoreCooldown = _chkHealLowIgnoreCooldown.Checked;
+            Properties.Settings.Default.txtHealLowCooldown = _txtHealLowCooldown.Text;
             Properties.Settings.Default.selectedScreen = (_cboScreen.SelectedItem as ScreenItem)?.Key ?? "";
 
             Properties.Settings.Default.Save();
@@ -618,6 +665,8 @@ namespace POE1Tools
             trkUpdateRate.Value = Properties.Settings.Default.trkUpdateRate;
 
             _chkPauseInHideout.Checked = Properties.Settings.Default.pauseFlasksInHideout;
+            _chkHealLowIgnoreCooldown.Checked = Properties.Settings.Default.chkHealLowIgnoreCooldown;
+            _txtHealLowCooldown.Text = Properties.Settings.Default.txtHealLowCooldown;
 
             PopulateScreens();
             SelectSavedScreen(Properties.Settings.Default.selectedScreen);

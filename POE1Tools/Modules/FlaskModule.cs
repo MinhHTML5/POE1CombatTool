@@ -48,6 +48,10 @@ namespace POE1Tools.Modules
 
         private List<int> _autoFlaskLatencyCooldown = new List<int>();
 
+        // When on, heal-low ignores each flask's own duration/cooldown and fires every _healLowCooldown ms instead
+        private bool _healLowIgnoreFlaskCooldown = false;
+        private int _healLowCooldown = 30;
+
         public bool isHighLifeRecently = false;
         public bool isLowLifeRecently = false;
         public bool isLowManaRecently = false;
@@ -159,6 +163,16 @@ namespace POE1Tools.Modules
             }
         }
 
+        public void SetHealLowIgnoreCooldown(bool value)
+        {
+            _healLowIgnoreFlaskCooldown = value;
+        }
+
+        public void SetHealLowCooldown(int value)
+        {
+            _healLowCooldown = value;
+        }
+
 
 
         public void MainLoop(int deltaTime, bool shouldDoLogic, bool started)
@@ -172,12 +186,13 @@ namespace POE1Tools.Modules
                 _main.pnlLowLifeNow.BackColor = lowLifeColor;
                 if (!_colorUtil.IsColorSimilar(lowLifeColor, _autoHealLowColor, COLOR_TOLERANCE))
                 {
-                    _autoHealLowCooldown = FLASK_COOLDOWN;
+                    _autoHealLowCooldown = _healLowIgnoreFlaskCooldown ? _healLowCooldown : FLASK_COOLDOWN;
                     for (int i = 1; i <= 5; i++)
                     {
                         int checkIndex = _autoHealLowIndex + i;
                         if (checkIndex > 4) checkIndex -= 5;
-                        if (healLowFlaskIndexArray[checkIndex] == true && _autoFlaskLatencyCooldown[checkIndex] <= 0)
+                        if (healLowFlaskIndexArray[checkIndex] == true
+                            && (_healLowIgnoreFlaskCooldown || _autoFlaskLatencyCooldown[checkIndex] <= 0))
                         {
                             PressFlaskKey(checkIndex);
                             _autoHealLowIndex = checkIndex;
