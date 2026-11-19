@@ -751,7 +751,7 @@
             lblSaveSettings.Name = "lblSaveSettings";
             lblSaveSettings.Size = new System.Drawing.Size(204, 15);
             lblSaveSettings.TabIndex = 21;
-            lblSaveSettings.Text = "Settings will be saved when you start.";
+            lblSaveSettings.Text = "Settings save on start and on close.";
             // 
             // btnSaveSettings
             // 

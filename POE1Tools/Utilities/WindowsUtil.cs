@@ -60,6 +60,17 @@ namespace POE1Tools.Utilities
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
+        public IntPtr GetForegroundWindowHandle()
+        {
+            return GetForegroundWindow();
+        }
+
+        // Put the overlay back on top; fullscreen games can push it behind after alt-tab or zoning
+        public void EnsureOverlayTopMost()
+        {
+            _overlayForm.EnsureTopMost();
+        }
+
         public string GetCurrentWindowsProcessName()
         {
             IntPtr currentWindowsHandle = GetForegroundWindow();
@@ -140,6 +151,12 @@ namespace POE1Tools.Utilities
             SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
             _textPoint = GetPixelPosition(TEXT_X_RATIO, TEXT_Y_RATIO);
+        }
+
+        public void EnsureTopMost()
+        {
+            if (!IsHandleCreated) return;
+            SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
         }
 
         public void SetDebugEnabled(bool enabled)

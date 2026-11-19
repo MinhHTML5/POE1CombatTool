@@ -143,5 +143,20 @@
     <Setting Name="txtHealLowCooldown" Type="System.String" Scope="User">
       <Value Profile="(Default)">30</Value>
     </Setting>
+    <Setting Name="txtFlaskOffset1" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="txtFlaskOffset2" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="txtFlaskOffset3" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="txtFlaskOffset4" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="txtFlaskOffset5" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

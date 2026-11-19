@@ -30,6 +30,7 @@ namespace POE1Tools.Modules
         private List<bool> manaFlaskIndexArray = new List<bool>();
         private List<bool> latencyFlaskIndexArray = new List<bool>();
         private List<int> latencyAmountArray = new List<int>();
+        private List<int> offsetAmountArray = new List<int>();
 
         private int _autoHealLowIndex = 0;
         private int _autoHealLowCooldown = 0;
@@ -77,6 +78,7 @@ namespace POE1Tools.Modules
                 manaFlaskIndexArray.Add(false);
                 latencyFlaskIndexArray.Add(false);
                 latencyAmountArray.Add(4000);
+                offsetAmountArray.Add(0);
                 _autoFlaskLatencyCooldown.Add(0);
             }
         }
@@ -84,9 +86,21 @@ namespace POE1Tools.Modules
         /// <summary>Recompute the sampled pixel positions (e.g. after the selected screen changed).</summary>
         public void RefreshPoints()
         {
+            // Swap the debug dots too, otherwise the old ones stay drawn on the overlay
+            _windowsUtil.RemoveDebugDrawPoint(_autoHealLowPoint);
+            _windowsUtil.RemoveDebugDrawPoint(_autoHealHighPoint);
+            _windowsUtil.RemoveDebugDrawPoint(_autoManaPoint);
+
             _autoHealLowPoint = _colorUtil.GetPixelPosition(LOW_LIFE_PIXEL_X, LOW_LIFE_PIXEL_Y);
             _autoHealHighPoint = _colorUtil.GetPixelPosition(HIGH_LIFE_PIXEL_X, HIGH_LIFE_PIXEL_Y);
             _autoManaPoint = _colorUtil.GetPixelPosition(MANA_PIXEL_X, MANA_PIXEL_Y);
+
+            if (_main.started)
+            {
+                _windowsUtil.AddDebugDrawPoint(_autoHealLowPoint);
+                _windowsUtil.AddDebugDrawPoint(_autoHealHighPoint);
+                _windowsUtil.AddDebugDrawPoint(_autoManaPoint);
+            }
         }
 
         public void Sample()
@@ -106,6 +120,7 @@ namespace POE1Tools.Modules
         public void Start()
         {
             if (!_sampled) Sample();
+            ApplyOffsets();
 
             _windowsUtil.AddDebugDrawPoint(_autoHealLowPoint);
             _windowsUtil.AddDebugDrawPoint(_autoHealHighPoint);
@@ -160,6 +175,26 @@ namespace POE1Tools.Modules
             if (index < 5)
             {
                 latencyAmountArray[index] = value;
+            }
+        }
+
+        public void SetFlaskOffset(int index, int value)
+        {
+            if (index < 5)
+            {
+                offsetAmountArray[index] = value;
+            }
+        }
+
+        // Periodic flasks wait their offset before the first press, then keep their normal rhythm
+        public void ApplyOffsets()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                if (latencyFlaskIndexArray[i])
+                {
+                    _autoFlaskLatencyCooldown[i] = offsetAmountArray[i];
+                }
             }
         }
 

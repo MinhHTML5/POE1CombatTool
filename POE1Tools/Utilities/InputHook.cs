@@ -140,10 +140,9 @@ namespace POE1Tools.Utilities
                     ushort vk = keyboard.VKey;
                     bool isDown = (keyboard.Flags & 0x01) == 0;
                     bool isUp = !isDown;
-                    if ((Keys)vk == Keys.ControlKey)
-                    {
-                        _controlPressing = isDown;
-                    }
+                    // Ask Windows for the real Ctrl state instead of tracking key events, so a missed
+                    // Ctrl key-up (e.g. alt-tab while holding it) can't leave Ctrl stuck "down"
+                    _controlPressing = IsControlDown();
                     _onKeyEvent((Keys)vk, isDown, _controlPressing);
                 }
             }
@@ -156,12 +155,21 @@ namespace POE1Tools.Utilities
 
 
         [DllImport("user32.dll")]
+        private static extern short GetAsyncKeyState(int vKey);
+
+        public static bool IsControlDown()
+        {
+            return (GetAsyncKeyState((int)Keys.ControlKey) & 0x8000) != 0;
+        }
+
+        [DllImport("user32.dll")]
         private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
         private const int KEYEVENTF_KEYDOWN = 0x0000;
         private const int KEYEVENTF_KEYUP = 0x0002;
 
         public void PressKey(Keys key, bool control = false)
         {
+            _controlPressing = IsControlDown();
             if (control && !_controlPressing)
             {
                 keybd_event((byte)Keys.ControlKey, 0, KEYEVENTF_KEYDOWN, UIntPtr.Zero);

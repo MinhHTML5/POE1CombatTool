@@ -42,6 +42,10 @@ namespace POE1Tools
             CreateScreenSelector();
             CreateHideoutOption();
             CreateHealLowCooldownOption();
+            CreateFlaskOffsetOptions();
+
+            // Keep option changes even if the tool is closed without pressing START
+            FormClosing += (s, e) => SaveSettings();
         }
 
         private readonly ClientLogReader _clientLog = new ClientLogReader();
@@ -101,6 +105,55 @@ namespace POE1Tools
             grpFlask.Controls.Add(_txtHealLowCooldown);
             _chkHealLowIgnoreCooldown.BringToFront();
             _txtHealLowCooldown.BringToFront();
+        }
+
+        private TextBox[] _txtFlaskOffsets;
+        private readonly ToolTip _toolTip = new ToolTip();
+
+        // An offset box right of each flask's "Periodically" duration box: how long after START (or after
+        // leaving the hideout) the flask is pressed for the first time
+        private void CreateFlaskOffsetOptions()
+        {
+            TextBox[] latencies = { txtFlaskLatency1, txtFlaskLatency2, txtFlaskLatency3, txtFlaskLatency4, txtFlaskLatency5 };
+            _txtFlaskOffsets = new TextBox[latencies.Length];
+            for (int i = 0; i < latencies.Length; i++)
+            {
+                TextBox latency = latencies[i];
+                int fullWidth = latency.Width;
+                latency.Width = (fullWidth - 6) / 2;
+
+                int index = i;
+                TextBox offset = new TextBox
+                {
+                    PlaceholderText = "Offset",
+                    Location = new Point(latency.Right + 6, latency.Top),
+                    Size = new Size(fullWidth - latency.Width - 6, latency.Height),
+                    WordWrap = false
+                };
+                offset.TextChanged += (s, e) =>
+                {
+                    // Empty means no offset
+                    if (offset.Text.Trim() == "")
+                    {
+                        offset.BackColor = SystemColors.Window;
+                        _flaskModule?.SetFlaskOffset(index, 0);
+                    }
+                    else if (int.TryParse(offset.Text, out int value) && value >= 0)
+                    {
+                        offset.BackColor = SystemColors.Window;
+                        _flaskModule?.SetFlaskOffset(index, value);
+                    }
+                    else
+                    {
+                        offset.BackColor = Color.LightCoral;
+                    }
+                };
+
+                _toolTip.SetToolTip(latency, "Periodically: press the flask every this many ms");
+                _toolTip.SetToolTip(offset, "Offset (ms): wait this long after START or leaving the hideout before the first press");
+                latency.Parent.Controls.Add(offset);
+                _txtFlaskOffsets[i] = offset;
+            }
         }
 
         private ComboBox _cboScreen;
@@ -243,6 +296,7 @@ namespace POE1Tools
             _timer.Start();
             _stopwatch.Start();
 
+            SharedSettings.Import(); // pick up settings saved by another build (Debug / Release)
             LoadSettings();
             DetectGameScreen(); // if the game is running, its screen wins over the saved one
         }
@@ -264,6 +318,23 @@ namespace POE1Tools
             _automationModule.Stop();
         }
 
+        private const int LOADING_SCREEN_DELAY = 300;
+        private int _blackCornersMs = 0;
+        private int _housekeepingMs = 0;
+        private bool _wasHideoutDisabled = false;
+
+        // The game is focused: if its window is on a different screen than the selected one, switch to it
+        private void FollowGameScreen()
+        {
+            IntPtr hwnd = _windowsUtil.GetForegroundWindowHandle();
+            if (hwnd == IntPtr.Zero) return;
+            Screen gameScreen = Screen.FromHandle(hwnd);
+            if (gameScreen.DeviceName != ScreenHelper.Current.DeviceName)
+            {
+                SelectScreen(gameScreen);
+            }
+        }
+
         private void MainLoop()
         {
             // This variable turn off all submodule from doing logic, but still let them to count cooldown
@@ -272,16 +343,26 @@ namespace POE1Tools
             lblDeltaTime.Text = deltaTime.ToString();
             _stopwatch.Restart();
 
-            // Check for game focus
+            // Check for game focus. Steam / x64 / Kakao / Epic builds all start with "PathOfExile"
             string currentProcessName = _windowsUtil.GetCurrentWindowsProcessName();
-            bool inFocus = currentProcessName == "PathOfExile";
+            bool inFocus = currentProcessName.StartsWith("PathOfExile", StringComparison.OrdinalIgnoreCase);
             if (!inFocus && started)
             {
                 shouldDoLogic = false;
                 lblMessage.Text = "POE is out of focus. Current window: " + currentProcessName;
             }
 
-            // Check for loading screen
+            // Once a second: follow the game if it is on another screen, and keep the overlay on top
+            _housekeepingMs += deltaTime;
+            if (_housekeepingMs >= 1000)
+            {
+                _housekeepingMs = 0;
+                if (inFocus) FollowGameScreen();
+                _windowsUtil.EnsureOverlayTopMost();
+            }
+
+            // Check for loading screen. The corners must stay black for a moment, so a dark frame
+            // or a brief flicker doesn't pause everything
             if (shouldDoLogic && started)
             {
                 Rectangle sb = ScreenHelper.Current.Bounds;
@@ -290,8 +371,16 @@ namespace POE1Tools
                 if (_colorUtil.IsColorSimilar(cornerColor1, Color.Black, COLOR_TOLERANCE)
                 && _colorUtil.IsColorSimilar(cornerColor2, Color.Black, COLOR_TOLERANCE))
                 {
-                    shouldDoLogic = false;
-                    lblMessage.Text = "POE is in loading screen. (Probably)";
+                    _blackCornersMs += deltaTime;
+                    if (_blackCornersMs >= LOADING_SCREEN_DELAY)
+                    {
+                        shouldDoLogic = false;
+                        lblMessage.Text = "POE is in loading screen. (Probably)";
+                    }
+                }
+                else
+                {
+                    _blackCornersMs = 0;
                 }
             }
 
@@ -318,6 +407,9 @@ namespace POE1Tools
                 }
             }
             _windowsUtil.SetHideoutDisabled(hideoutDisabled);
+            // Leaving the hideout counts as a fresh start for the flask offsets
+            if (_wasHideoutDisabled && !hideoutDisabled && started) _flaskModule.ApplyOffsets();
+            _wasHideoutDisabled = hideoutDisabled;
 
             _flaskModule.MainLoop(deltaTime, flaskLogic, started);
             _skillModule.MainLoop(deltaTime, shouldDoLogic, started);
@@ -333,7 +425,8 @@ namespace POE1Tools
         {
             _automationModule.OnKeyEvent(key, isDown, isControlDown);
 
-            if ((key == Keys.B || key == Keys.Space) && !isDown && isControlDown)
+            // Only a real keyboard Ctrl+B / Ctrl+Space toggles; ignore keys sent by software (ours included)
+            if ((key == Keys.B || key == Keys.Space) && !isDown && isControlDown && !_inputHook.LastEventInjected)
             {
                 started = !started;
                 if (started)
@@ -579,6 +672,12 @@ namespace POE1Tools
             Properties.Settings.Default.txtFlaskLatency4 = txtFlaskLatency4.Text;
             Properties.Settings.Default.txtFlaskLatency5 = txtFlaskLatency5.Text;
 
+            Properties.Settings.Default.txtFlaskOffset1 = _txtFlaskOffsets[0].Text;
+            Properties.Settings.Default.txtFlaskOffset2 = _txtFlaskOffsets[1].Text;
+            Properties.Settings.Default.txtFlaskOffset3 = _txtFlaskOffsets[2].Text;
+            Properties.Settings.Default.txtFlaskOffset4 = _txtFlaskOffsets[3].Text;
+            Properties.Settings.Default.txtFlaskOffset5 = _txtFlaskOffsets[4].Text;
+
             Properties.Settings.Default.chkSkillLatency1 = chkSkillLatency1.Checked;
             Properties.Settings.Default.chkSkillLatency2 = chkSkillLatency2.Checked;
             Properties.Settings.Default.chkSkillLatency3 = chkSkillLatency3.Checked;
@@ -607,6 +706,7 @@ namespace POE1Tools
             Properties.Settings.Default.selectedScreen = (_cboScreen.SelectedItem as ScreenItem)?.Key ?? "";
 
             Properties.Settings.Default.Save();
+            SharedSettings.Export();
         }
 
         private void LoadSettings()
@@ -640,6 +740,12 @@ namespace POE1Tools
             txtFlaskLatency3.Text = Properties.Settings.Default.txtFlaskLatency3;
             txtFlaskLatency4.Text = Properties.Settings.Default.txtFlaskLatency4;
             txtFlaskLatency5.Text = Properties.Settings.Default.txtFlaskLatency5;
+
+            _txtFlaskOffsets[0].Text = Properties.Settings.Default.txtFlaskOffset1;
+            _txtFlaskOffsets[1].Text = Properties.Settings.Default.txtFlaskOffset2;
+            _txtFlaskOffsets[2].Text = Properties.Settings.Default.txtFlaskOffset3;
+            _txtFlaskOffsets[3].Text = Properties.Settings.Default.txtFlaskOffset4;
+            _txtFlaskOffsets[4].Text = Properties.Settings.Default.txtFlaskOffset5;
 
             chkSkillLatency1.Checked = Properties.Settings.Default.chkSkillLatency1;
             chkSkillLatency2.Checked = Properties.Settings.Default.chkSkillLatency2;

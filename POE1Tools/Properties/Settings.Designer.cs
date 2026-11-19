@@ -586,5 +586,65 @@ namespace POE1Tools.Properties {
                 this["txtHealLowCooldown"] = value;
             }
         }
+            
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string txtFlaskOffset1 {
+            get {
+                return ((string)(this["txtFlaskOffset1"]));
+            }
+            set {
+                this["txtFlaskOffset1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string txtFlaskOffset2 {
+            get {
+                return ((string)(this["txtFlaskOffset2"]));
+            }
+            set {
+                this["txtFlaskOffset2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string txtFlaskOffset3 {
+            get {
+                return ((string)(this["txtFlaskOffset3"]));
+            }
+            set {
+                this["txtFlaskOffset3"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string txtFlaskOffset4 {
+            get {
+                return ((string)(this["txtFlaskOffset4"]));
+            }
+            set {
+                this["txtFlaskOffset4"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string txtFlaskOffset5 {
+            get {
+                return ((string)(this["txtFlaskOffset5"]));
+            }
+            set {
+                this["txtFlaskOffset5"] = value;
+            }
+        }
     }
 }

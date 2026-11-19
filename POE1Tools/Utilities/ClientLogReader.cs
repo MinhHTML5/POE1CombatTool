@@ -67,6 +67,7 @@ namespace POE1Tools.Utilities
             _path = path;
             InHideout = false;
             CurrentArea = "";
+            _hasAreaIds = false;
             try
             {
                 long length = new FileInfo(path).Length;
@@ -116,22 +117,31 @@ namespace POE1Tools.Utilities
             }
         }
 
+        // Set once a "Generating level" line is seen; from then on the area id alone decides
+        private bool _hasAreaIds;
+
         private void ParseLine(string line)
         {
             Match m = GeneratingRegex.Match(line);
             if (m.Success)
             {
+                _hasAreaIds = true;
                 CurrentArea = m.Groups[1].Value;
-                InHideout = CurrentArea.IndexOf("Hideout", StringComparison.OrdinalIgnoreCase) >= 0;
+                // Player hideouts are "HideoutMountain", "HideoutOssuary"... Syndicate safehouses are
+                // "BetrayalSafeHouse*" even though the game calls them "Syndicate Hideout"
+                InHideout = CurrentArea.StartsWith("Hideout", StringComparison.OrdinalIgnoreCase);
                 return;
             }
 
-            // Fallback for logs without "Generating level" lines (English client only)
+            // Fallback for logs without "Generating level" lines (English client only). Ignored when area
+            // ids are available, because "You have entered Syndicate Hideout." would override the id check
+            if (_hasAreaIds) return;
             m = EnteredRegex.Match(line);
             if (m.Success)
             {
                 CurrentArea = m.Groups[1].Value;
-                InHideout = CurrentArea.IndexOf("Hideout", StringComparison.OrdinalIgnoreCase) >= 0;
+                InHideout = CurrentArea.EndsWith(" Hideout", StringComparison.OrdinalIgnoreCase)
+                    && !CurrentArea.StartsWith("Syndicate", StringComparison.OrdinalIgnoreCase);
             }
         }
 
